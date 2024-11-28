@@ -1,0 +1,114 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{fancyhdr} 
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{keywordcolor}{rgb}{0.4, 0.7, 1.0} % Light blue for keywords
+\definecolor{ndkeywordcolor}{rgb}{0.8, 0.5, 0.0} % Orange for non-default keywords
+\definecolor{stringcolor}{rgb}{0.8, 0.2, 0.2} % Red for strings
+\definecolor{commentcolor}{rgb}{0.6, 0.6, 0.6} % Gray for comments
+\definecolor{bracecolor}{rgb}{0.6, 0.6, 1.0} % Custom color for braces
+
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with},
+  keywordstyle=\color{keywordcolor}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{ndkeywordcolor}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor}\ttfamily,
+  morestring=[b]',
+  morestring=[b]",
+  literate={\{}{{\textcolor{bracecolor}{\{}}}1
+           {\}}{{\textcolor{bracecolor}{\}}}}1
+           {<}{{\textcolor{bracecolor}{<}}}1
+           {>}{{\textcolor{bracecolor}{>}}}1,
+}
+\lstdefinelanguage{Python3}{
+  keywords={False, async, class, finally, is, return, None, continue, for, lambda, try, True, def, from, nonlocal, while, and, del, global, not, with, as, elif, if, or, yield, assert, else, import, pass, break, except, in, raise},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={self},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=true,
+  comment=[l]{\#},
+  morecomment=[s]{"""}{"""},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]",
+  emph={print, len, range, int, str, float, list, dict, set, tuple},
+  emphstyle={\color{teal}}
+}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{xy}
+% \usepackage{url} % Commented out because hyperref provides similar functionality
+\usepackage{parskip}
+\usepackage{comment}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{wrapfig}
+\usepackage{times}
+
+\captionsetup[figure]{font={small,it}}
+
+\usepackage[backend=biber,style=numeric,sortcites,maxbibnames=99]{biblatex}
+\addbibresource{references.bib}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\Hrule}{\rule{\linewidth}{0.3mm}}
+\newcommand{\classnum}{CS-GY 6313 B}
+
+\makeatletter% since there's an at-sign (@) in the command name
+\renewcommand{\@maketitle}{%
+  \parindent=0pt% don't indent paragraphs in the title block
+  \centering
+  {\Large \bfseries\textsc{\@title}}
+  \HRule\par%
+  \textit{\@author \hfill \classnum}
+  \par
+}
+\makeatother% resets the meaning of the at-sign (@)
+\title{Project 3: Principles of Database Systems} 
+\author{Ivan Aristy — iae225}
+% \classnum
+
+\begin{document}
+  \maketitle % prints the title block
+  \thispagestyle{empty}
+  \vspace{+5pt}
+
+\section{Introduction}
+\label{sec:intro}
+
+% \begin{figure}[ht] 
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{}
+%     \caption{
+%       \textbf{Screenshot of the final visualization.}
+%     }
+%     \label{fig:fig1}
+%   \end{figure}
+
+\begin{refcontext}[sorting=nyt]
+\printbibliography
+\end{refcontext}
+
+\end{document}
+
