@@ -11,7 +11,7 @@ public interface UserRepository <T extends User> extends UserDetailsService {
 
     Collection<T> list(int page, int pageSize);
 
-    T get(String id);
+    T getUserById(String id);
 
     T update(T data);
 

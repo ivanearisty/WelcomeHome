@@ -3,29 +3,66 @@ package PDS.Project3.Repository;
 import PDS.Project3.Domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
 
+import static PDS.Project3.Queries.UserQueries.INSERT_USER_QUERY;
+
 @Repository
 @RequiredArgsConstructor
 @Slf4j
 public class UserRepositoryImpl implements UserRepository<User> {
+
+    private final NamedParameterJdbcTemplate jdbc;
+    private final BCryptPasswordEncoder encoder;
+
     @Override
-    public User create(User data) {
+    public User create(User user) {
+        //TODO: Check if email is unique
+        if(user.getUserName().isEmpty()){
+            user.setUserName(user.getEmail().substring(0,user.getEmail().indexOf('@')));
+        }
+        user.setEnabled(true);
+        user.setNonLocked(true);
+        SqlParameterSource parameterSource = getSQLParameterSource(user);
+        jdbc.update(INSERT_USER_QUERY,parameterSource);
+        log.info("User created: " + user);
+        log.info("With parameters: " + parameterSource.toString());
+        return user;
+    }
+
+    private SqlParameterSource getSQLParameterSource(User user) {
+        return new MapSqlParameterSource()
+                .addValue("userName", user.getUserName())
+                .addValue("password", encoder.encode(user.getPassword()))
+                .addValue("firstName", user.getFirstName())
+                .addValue("lastName", user.getLastName())
+                .addValue("email", user.getEmail())
+                .addValue("enabled", user.isEnabled())
+                .addValue("nonLocked", user.isNonLocked());
+    }
+
+    @Override
+    public Collection<User> list(int page, int pageSize) {
+        return  null;
+    }
+
+    @Override
+    public User getUserById(String id) {
         return null;
     }
 
     @Override
-    public Collection list(int page, int pageSize) {
-        return List.of();
-    }
-
-    @Override
-    public User get(String id) {
+    public User getUserByEmail(String email) {
         return null;
     }
 
@@ -36,11 +73,6 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
     @Override
     public Boolean delete(String id) {
-        return null;
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
         return null;
     }
 

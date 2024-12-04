@@ -1,12 +1,13 @@
 -- Establish the connection and set the time zone
 SET TIME_ZONE = '-04:00';
 
+DROP SCHEMA IF EXISTS Project3;
+
 -- Create the schema if it doesn't exist
 CREATE SCHEMA IF NOT EXISTS Project3;
 
 -- Select the database
 USE Project3;
-
 
 CREATE TABLE Category (
                           mainCategory VARCHAR(50) NOT NULL,
@@ -36,6 +37,8 @@ CREATE TABLE Person (
                         fname VARCHAR(50) NOT NULL,
                         lname VARCHAR(50) NOT NULL,
                         email VARCHAR(100) NOT NULL,
+                        is_non_locked  BOOLEAN DEFAULT TRUE,
+                        is_enabled     BOOLEAN DEFAULT TRUE,
                         PRIMARY KEY (userName)
 );
 
