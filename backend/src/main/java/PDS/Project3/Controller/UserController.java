@@ -3,6 +3,7 @@ package PDS.Project3.Controller;
 import PDS.Project3.Domain.DTO.UserDTO;
 import PDS.Project3.Domain.HTTPResponse;
 import PDS.Project3.Domain.User;
+import PDS.Project3.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -16,11 +17,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.net.http.HttpResponse;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Map.of;
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping(path = "/")
@@ -31,6 +36,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
+    private final UserService userService;
 
     @PostMapping("/test")
     public ResponseEntity<HTTPResponse> test() {
@@ -38,8 +44,8 @@ public class UserController {
                 HTTPResponse.builder()
                         .timeStamp(now().toString())
                         .message("Hello There")
-                        .status(HttpStatus.OK)
-                        .statusCode(HttpStatus.OK.value())
+                        .status(OK)
+                        .statusCode(OK.value())
                         .build());
     }
 
@@ -50,11 +56,23 @@ public class UserController {
                         .userName("test")
                         .email("ivanearisty@gmail.com")
                         .password("5ome5ecurePa1123")
-                        .firstName("ivan")
-                        .lastName("aristy")
+                        .firstName("Ivan")
+                        .lastName("Aristy")
                         .build();
+        userService.createUser(testUser);
+        return ResponseEntity.created(getURI()).body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .message("Created user: " + testUser.toString())
+                        .status(CREATED)
+                        .statusCode(CREATED.value())
+                        .build()
+        );
+    }
 
-        return
+    private URI getURI() {
+        return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()); //TODO: create get method
+//        return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/get/<userName>").toUriString()); //TODO: create get method
     }
 
 }

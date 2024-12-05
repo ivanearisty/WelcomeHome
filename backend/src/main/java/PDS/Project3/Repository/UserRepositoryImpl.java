@@ -15,7 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 
-import static PDS.Project3.Domain.Roles.ROLE_CLIENT;
+import static PDS.Project3.Domain.Enum.Roles.ROLE_ADMIN;
+import static PDS.Project3.Domain.Enum.Roles.ROLE_CLIENT;
 import static PDS.Project3.Queries.Queries.INSERT_USER;
 
 @Repository
@@ -38,7 +39,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
             user.setNonLocked(true);
             SqlParameterSource parameterSource = getSQLParameterSource(user);
             jdbc.update(INSERT_USER,parameterSource);
-            roleRepository.addRoleToUser(ROLE_CLIENT.name(), user.getUserName()); //TODO: Add the addition of the user with custom roles
+            roleRepository.addRoleToUser(ROLE_ADMIN.name(), user.getUserName()); //TODO: MAKE THIS CLIENT FOR LATER
             log.info("User created: {}", user);
             log.info("With parameters: {}", parameterSource.toString());
             return user;

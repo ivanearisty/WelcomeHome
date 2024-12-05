@@ -61,9 +61,17 @@ CREATE TABLE DonatedBy (
 CREATE TABLE Role (
                       roleID VARCHAR(20) NOT NULL,
                       roleDescription VARCHAR(100),
-                      rolePermissions VARCHAR(100),
+                      rolePermissions VARCHAR(255),
                       PRIMARY KEY (roleID)
 );
+
+INSERT INTO Role(roleID, roleDescription, rolePermissions)
+VALUES
+    ('ROLE_ADMIN', 'Administrator, all permissions', 'READ:PERSON, UPDATE:PERSON, DELETE:PERSON, CREATE:PERSON, READ:ITEM, UPDATE:ITEM, DELETE:ITEM, CREATE:ITEM'),
+    ('ROLE_CLIENT', 'read and order', 'READ:PERSON, READ:ITEM'),
+    ('ROLE_DONOR', 'read and donate', 'READ:PERSON, READ:ITEM'),
+    ('ROLE_STAFF', 'read edit orders and inventory', 'READ:PERSON, READ:ITEM'),
+    ('ROLE_VOLUNTEER', 'act and stuff', 'READ:PERSON, READ:ITEM');
 
 CREATE TABLE RolePerson (
                       roleID VARCHAR(20) NOT NULL,
