@@ -2,6 +2,7 @@ package PDS.Project3.Controller;
 
 import PDS.Project3.Domain.DTO.UserDTO;
 import PDS.Project3.Domain.HTTPResponse;
+import PDS.Project3.Domain.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -44,6 +45,14 @@ public class UserController {
 
     @PostMapping("/inserttest")
     public ResponseEntity<HTTPResponse> inserttest() {
+        User testUser =
+                User.builder()
+                        .userName("test")
+                        .email("ivanearisty@gmail.com")
+                        .password("5ome5ecurePa1123")
+                        .firstName("ivan")
+                        .lastName("aristy")
+                        .build();
 
         return
     }

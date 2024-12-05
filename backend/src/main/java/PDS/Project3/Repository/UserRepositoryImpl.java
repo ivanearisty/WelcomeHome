@@ -1,9 +1,10 @@
 package PDS.Project3.Repository;
 
+import PDS.Project3.Domain.Role;
 import PDS.Project3.Domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -13,9 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
-import java.util.List;
 
-import static PDS.Project3.Queries.UserQueries.INSERT_USER_QUERY;
+import static PDS.Project3.Domain.Roles.ROLE_CLIENT;
+import static PDS.Project3.Queries.Queries.INSERT_USER;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,20 +25,30 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
     private final NamedParameterJdbcTemplate jdbc;
     private final BCryptPasswordEncoder encoder;
+    private final RoleRepository<Role> roleRepository;
 
     @Override
     public User create(User user) {
         //TODO: Check if email is unique
-        if(user.getUserName().isEmpty()){
-            user.setUserName(user.getEmail().substring(0,user.getEmail().indexOf('@')));
+        try{
+            if(user.getUserName().isEmpty()){
+                user.setUserName(user.getEmail().substring(0,user.getEmail().indexOf('@')));
+            }
+            user.setEnabled(true);
+            user.setNonLocked(true);
+            SqlParameterSource parameterSource = getSQLParameterSource(user);
+            jdbc.update(INSERT_USER,parameterSource);
+            roleRepository.addRoleToUser(ROLE_CLIENT.name(), user.getUserName()); //TODO: Add the addition of the user with custom roles
+            log.info("User created: {}", user);
+            log.info("With parameters: {}", parameterSource.toString());
+            return user;
+        }catch (EmptyResultDataAccessException exception){
+            log.info("User creation failed: {}", user);
+        }catch (Exception exception){
+            log.info("Unknown error when creating a new user: {}", user);
+            exception.printStackTrace();
         }
-        user.setEnabled(true);
-        user.setNonLocked(true);
-        SqlParameterSource parameterSource = getSQLParameterSource(user);
-        jdbc.update(INSERT_USER_QUERY,parameterSource);
-        log.info("User created: " + user);
-        log.info("With parameters: " + parameterSource.toString());
-        return user;
+        return null;
     }
 
     private SqlParameterSource getSQLParameterSource(User user) {

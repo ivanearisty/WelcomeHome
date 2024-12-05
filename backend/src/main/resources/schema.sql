@@ -60,8 +60,17 @@ CREATE TABLE DonatedBy (
 
 CREATE TABLE Role (
                       roleID VARCHAR(20) NOT NULL,
-                      rDescription VARCHAR(100),
+                      roleDescription VARCHAR(100),
+                      rolePermissions VARCHAR(100),
                       PRIMARY KEY (roleID)
+);
+
+CREATE TABLE RolePerson (
+                      roleID VARCHAR(20) NOT NULL,
+                      userName VARCHAR(50) NOT NULL,
+                      PRIMARY KEY (roleID, userName),
+                      FOREIGN KEY (roleID) references Role(roleID),
+                      FOREIGN KEY (userName) references Person(userName)
 );
 
 CREATE TABLE Act (
