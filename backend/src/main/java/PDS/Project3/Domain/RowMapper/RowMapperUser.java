@@ -20,6 +20,14 @@ public class RowMapperUser implements org.springframework.jdbc.core.RowMapper<Us
 
     @Override
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return null;
+        return User.builder()
+                .userName(rs.getString("userName"))
+                .password(rs.getString("password"))
+                .firstName(rs.getString("fname"))
+                .lastName(rs.getString("lname"))
+                .email(rs.getString("email"))
+                .nonLocked(rs.getBoolean("is_non_locked"))
+                .enabled(rs.getBoolean("is_enabled"))
+                .build();
     }
 }

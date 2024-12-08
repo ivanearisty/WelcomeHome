@@ -1,7 +1,10 @@
 package PDS.Project3.Repository;
 
 import PDS.Project3.Domain.Role;
+import PDS.Project3.Domain.RowMapper.RowMapperUser;
 import PDS.Project3.Domain.User;
+import PDS.Project3.Domain.UserPrincipal;
+import PDS.Project3.Queries.Queries;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,9 +17,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Map;
 
 import static PDS.Project3.Domain.Enum.Roles.ROLE_ADMIN;
-import static PDS.Project3.Domain.Enum.Roles.ROLE_CLIENT;
+import static PDS.Project3.Queries.Queries.COUNT_USERNAME;
 import static PDS.Project3.Queries.Queries.INSERT_USER;
 
 @Repository
@@ -35,6 +39,9 @@ public class UserRepositoryImpl implements UserRepository<User> {
             if(user.getUserName().isEmpty()){
                 user.setUserName(user.getEmail().substring(0,user.getEmail().indexOf('@')));
             }
+            if(this.countUsernames(user) > 0){
+                throw new RuntimeException("Username already exists");
+            }
             user.setEnabled(true);
             user.setNonLocked(true);
             SqlParameterSource parameterSource = getSQLParameterSource(user);
@@ -50,6 +57,10 @@ public class UserRepositoryImpl implements UserRepository<User> {
             exception.printStackTrace();
         }
         return null;
+    }
+
+    private Integer countUsernames(User user){
+        return jdbc.queryForObject(COUNT_USERNAME, Map.of("userName", user.getUserName()), Integer.class);
     }
 
     private SqlParameterSource getSQLParameterSource(User user) {
@@ -69,8 +80,10 @@ public class UserRepositoryImpl implements UserRepository<User> {
     }
 
     @Override
-    public User getUserById(String id) {
-        return null;
+    public User getUserByUsername(String id) {
+        User user = jdbc.queryForObject(Queries.SELECT_USER_BY_USERNAME, Map.of("userName", id), new RowMapperUser());
+        log.info("Retrieved User: {}", user);
+        return user;
     }
 
     @Override
@@ -88,8 +101,17 @@ public class UserRepositoryImpl implements UserRepository<User> {
         return null;
     }
 
+//    public Boolean acceptDonation(Item id);
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        User user = getUserByUsername(username);
+        if(user == null){
+            log.error("Repository loadUserByUsername did not find: {}", username);
+            throw new UsernameNotFoundException("User not found");
+        }else {
+            log.info("Repository loadUserByUsername found user: {}", user.getUserName());
+            return new UserPrincipal(user, roleRepository.getRoleByUserName(user.getUserName()).getPermission());
+        }
     }
 }

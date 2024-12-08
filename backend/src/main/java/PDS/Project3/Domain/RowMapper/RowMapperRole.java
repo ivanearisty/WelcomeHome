@@ -12,7 +12,7 @@ public class RowMapperRole implements RowMapper<Role> {
         return Role.builder()
                 .roleID(rs.getString("roleID"))
                 .roleDescription(rs.getString("roleDescription"))
-                .roleDescription(rs.getString("roleDescription"))
+                .permission(rs.getString("rolePermissions"))
                 .build();
     }
 }
