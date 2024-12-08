@@ -18,6 +18,4 @@ public interface UserRepository <T extends User> extends UserDetailsService {
     Boolean delete(String id);
     /* Basic Crud Operations */
 
-    public User getUserByEmail(String email);
-
 }

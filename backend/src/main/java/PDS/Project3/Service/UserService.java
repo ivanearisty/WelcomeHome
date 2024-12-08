@@ -4,5 +4,7 @@ import PDS.Project3.Domain.DTO.UserDTO;
 import PDS.Project3.Domain.User;
 
 public interface UserService {
-    UserDTO createUser(User user);
+    public UserDTO createUser(User user);
+
+    public UserDTO getUser(String userName);
 }

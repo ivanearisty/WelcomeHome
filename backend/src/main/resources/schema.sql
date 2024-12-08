@@ -144,3 +144,40 @@ CREATE TABLE Delivered (
                            FOREIGN KEY (userName) REFERENCES Person(userName),
                            FOREIGN KEY (orderID) REFERENCES Ordered(orderID)
 );
+
+-- Note, the following random data was partially generated with the use of AI:
+
+-- Insert data into Category table
+INSERT INTO Category (mainCategory, subCategory, catNotes) VALUES
+        ('Furniture', 'Chairs', 'Seating furniture'),
+        ('Electronics', 'Phones', 'Mobile and landline phones'),
+        ('Books', 'Fiction', 'Novels and stories');
+
+-- Insert data into Item table
+INSERT INTO Item (iDescription, color, isNew, hasPieces, material, mainCategory, subCategory) VALUES
+        ('A comfortable wooden chair', 'Brown', TRUE, FALSE, 'Wood', 'Furniture', 'Chairs'),
+        ('A high-tech smartphone', 'Black', TRUE, FALSE, 'Plastic', 'Electronics', 'Phones'),
+        ('A bestselling novel', 'N/A', FALSE, FALSE, 'Paper', 'Books', 'Fiction');
+
+-- Insert data into Person table
+INSERT INTO Person (userName, password, fname, lname, email) VALUES
+        ('admin', 'admin123', 'John', 'Doe', 'admin@example.com'),
+        ('client1', 'client123', 'Jane', 'Smith', 'jane@example.com'),
+        ('donor1', 'donor123', 'Jim', 'Beam', 'jim@example.com');
+
+-- Insert data into DonatedBy table
+INSERT INTO DonatedBy (ItemID, userName, donateDate) VALUES
+        (1, 'donor1', '2023-04-12');
+
+-- Insert data into Ordered table
+INSERT INTO Ordered (orderDate, supervisor, client) VALUES
+        ('2023-08-09', 'admin', 'client1');
+
+-- Insert data into Location table
+INSERT INTO Location (roomNum, shelfNum, shelf, shelfDescription) VALUES
+    (1, 5, 'Top Shelf', 'This is the top shelf in room 1');
+
+
+-- Insert data into Piece table
+INSERT INTO Piece (ItemID, pieceNum, pDescription, length, width, height, shelfNum, roomNum) VALUES
+        (1, 1, 'Chair seat', 40, 40, 5, 5,1);

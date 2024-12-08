@@ -3,6 +3,8 @@ package PDS.Project3.Controller;
 import PDS.Project3.Domain.DTO.UserDTO;
 import PDS.Project3.Domain.HTTPResponse;
 import PDS.Project3.Domain.User;
+import PDS.Project3.Domain.UserPrincipal;
+import PDS.Project3.Service.RoleService;
 import PDS.Project3.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.net.http.HttpResponse;
 
+import static PDS.Project3.Domain.RowMapper.RowMapperUser.toUser;
 import static java.time.LocalDateTime.now;
 import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.*;
@@ -37,6 +40,7 @@ public class UserController {
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final UserService userService;
+    private final RoleService roleService;
 
     @PostMapping("/test")
     public ResponseEntity<HTTPResponse> test() {
@@ -68,6 +72,11 @@ public class UserController {
                         .statusCode(CREATED.value())
                         .build()
         );
+    }
+
+    private UserPrincipal getUserPrincipal(UserDTO userDTO) {
+        return new UserPrincipal(toUser(userDTO),
+                roleService.getRoleByUsername(userDTO.getUserName()).getPermission());
     }
 
     private URI getURI() {

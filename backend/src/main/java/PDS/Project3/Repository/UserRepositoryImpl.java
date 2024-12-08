@@ -87,11 +87,6 @@ public class UserRepositoryImpl implements UserRepository<User> {
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        return null;
-    }
-
-    @Override
     public User update(User data) {
         return null;
     }

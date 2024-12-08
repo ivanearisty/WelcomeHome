@@ -1,5 +1,6 @@
 package PDS.Project3.Configuration;
 
+import PDS.Project3.Configuration.Filters.JwtAuthenticationFilter;
 import PDS.Project3.Domain.Enum.Roles;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.LogoutConf
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static PDS.Project3.Domain.Enum.Roles.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -27,15 +29,18 @@ public class SecurityConfig {
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String[] PUBLIC_URLS = {"/user/login/**"};
+    private static final String[] PUBLIC_URLS = {"/user/login/**", "/inserttest/**", "/test**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers("/item").hasAnyAuthority(ROLE_ADMIN.name(), ROLE_CLIENT.name())
                         .requestMatchers("/order").hasAnyAuthority(ROLE_ADMIN.name(), ROLE_STAFF.name())
                         .requestMatchers("/donate").hasAuthority(ROLE_STAFF.name())
