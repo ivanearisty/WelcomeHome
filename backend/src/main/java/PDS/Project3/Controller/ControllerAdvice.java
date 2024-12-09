@@ -1,7 +1,8 @@
 package PDS.Project3.Controller;
 
-import PDS.Project3.Domain.HTTPResponse;
+import PDS.Project3.Domain.Entities.HTTPResponse;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -63,6 +64,31 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
                 , statusCode);
     }
 
+    @ExceptionHandler(JWTDecodeException.class)
+    public ResponseEntity<HTTPResponse> jWTDecodeException(JWTDecodeException exception) {
+        log.error(exception.getMessage());
+        return new ResponseEntity<>(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .reason("Wrong JWT token")
+                        .developerMessage(exception.getMessage())
+                        .status(BAD_REQUEST)
+                        .statusCode(BAD_REQUEST.value())
+                        .build(), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<HTTPResponse> jWTVerificationException(JWTVerificationException exception) {
+        log.error(exception.getMessage());
+        return new ResponseEntity<>(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .reason("Wrong JWT token")
+                        .developerMessage(exception.getMessage())
+                        .status(BAD_REQUEST)
+                        .statusCode(BAD_REQUEST.value())
+                        .build(), BAD_REQUEST);
+    }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<HTTPResponse> sQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException exception) {
@@ -138,19 +164,6 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
                         .reason(exception.getMessage() != null ?
                                 (exception.getMessage().contains("expected 1, actual 0") ? "Record not found" : exception.getMessage())
                                 : "Some error occurred")
-                        .developerMessage(exception.getMessage())
-                        .status(INTERNAL_SERVER_ERROR)
-                        .statusCode(INTERNAL_SERVER_ERROR.value())
-                        .build(), INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(JWTDecodeException.class)
-    public ResponseEntity<HTTPResponse> exception(JWTDecodeException exception) {
-        log.error(exception.getMessage());
-        return new ResponseEntity<>(
-                HTTPResponse.builder()
-                        .timeStamp(now().toString())
-                        .reason("Could not decode the token")
                         .developerMessage(exception.getMessage())
                         .status(INTERNAL_SERVER_ERROR)
                         .statusCode(INTERNAL_SERVER_ERROR.value())

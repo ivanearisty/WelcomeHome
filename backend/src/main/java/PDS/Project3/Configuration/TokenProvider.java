@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.auth0.jwt.algorithms.Algorithm.*;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
@@ -44,7 +45,7 @@ public class TokenProvider {
                 .withSubject(userPrincipal.getUsername()) //TODO: Change into something unrecognizable for security purposes in prod
                 .withArrayClaim(AUTHORITIES, userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new))
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
-                .sign(Algorithm.HMAC256(secret.getBytes()));
+                .sign(HMAC512(secret.getBytes()));
     }
 
     public String createRefreshToken(UserPrincipal userPrincipal){
@@ -54,7 +55,7 @@ public class TokenProvider {
                 .withSubject(userPrincipal.getUsername())
                 .withArrayClaim(AUTHORITIES, userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new))
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
-                .sign(Algorithm.HMAC256(secret.getBytes()));
+                .sign(HMAC512(secret.getBytes()));
     }
 
     public String getSubject(String token, HttpServletRequest request) {
@@ -82,7 +83,7 @@ public class TokenProvider {
 
     public List<GrantedAuthority> getAuthorities(String token) {
         String[] claims = getClaimsFromToken(token);
-        return stream(claims).map(SimpleGrantedAuthority::new).collect(toList());
+        return stream(claims).map(String::trim).map(SimpleGrantedAuthority::new).collect(toList());
     }
 
     public Authentication getAuthentication(String userName, List<GrantedAuthority> authorityList, HttpServletRequest request){
@@ -96,7 +97,10 @@ public class TokenProvider {
         try {
             Algorithm algorithm = HMAC512(secret);
             verifier = JWT.require(algorithm).withIssuer(ISSUER).build();
-        }catch (JWTVerificationException exception) { throw new JWTVerificationException("Cannot Verify"); }
+        }catch (JWTVerificationException exception) {
+            exception.printStackTrace();
+            throw new JWTVerificationException("Cannot Verify");
+        }
         return verifier;
     }
 

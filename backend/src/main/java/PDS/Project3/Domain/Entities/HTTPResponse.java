@@ -1,4 +1,4 @@
-package PDS.Project3.Domain;
+package PDS.Project3.Domain.Entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

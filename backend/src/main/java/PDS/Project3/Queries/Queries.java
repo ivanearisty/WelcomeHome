@@ -19,4 +19,40 @@ public class Queries {
             INNER JOIN Person as p ON rp.userName = p.userName
             WHERE p.userName = :userName;
             """;
+
+    //ITEM QUERIES
+    public static final String INSERT_ITEM = """
+    INSERT INTO Item (iDescription, photo, color, isNew, hasPieces, material, mainCategory, subCategory)
+    VALUES (:iDescription, :photo, :color, :isNew, :hasPieces, :material, :mainCategory, :subCategory);
+    """;
+    public static final String SELECT_ITEM_BY_ID = "SELECT * FROM Item WHERE itemID = :itemID";
+
+    //PIECE QUERIES
+    public static final String SELECT_PIECES_BY_ITEM_ID = "SELECT * FROM Piece WHERE ItemID = :itemID;";
+
+    //ORDER QUERY
+    public static final String SELECT_ORDER_BY_ORDER_ID = """
+            SELECT
+                i.ItemID AS ItemID,
+                i.iDescription AS ItemDescription,
+                i.color AS color,
+                i.isNew AS isNew,
+                i.hasPieces AS hasPieces,
+                i.material AS material,
+                i.mainCategory AS mainCategory,
+                i.subCategory AS subCategory,
+                p.pieceNum AS pieceNum,
+                p.pDescription AS pDescription,
+                p.length AS length,
+                p.width AS width,
+                p.height AS height,
+                p.roomNum AS roomNum,
+                p.shelfNum AS shelfNum,
+                p.pNotes AS pNotes
+            FROM ItemIn ii
+            JOIN Item i ON ii.ItemID = i.ItemID
+            LEFT JOIN Piece p ON i.ItemID = p.ItemID
+            WHERE ii.orderID = :orderID
+            ORDER BY i.ItemID, p.pieceNum
+            """;
 }

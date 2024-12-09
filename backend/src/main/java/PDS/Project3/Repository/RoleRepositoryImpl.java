@@ -1,6 +1,6 @@
 package PDS.Project3.Repository;
 
-import PDS.Project3.Domain.Role;
+import PDS.Project3.Domain.Entities.Role;
 import PDS.Project3.Domain.RowMapper.RowMapperRole;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

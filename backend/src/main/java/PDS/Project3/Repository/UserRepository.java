@@ -1,6 +1,6 @@
 package PDS.Project3.Repository;
 
-import PDS.Project3.Domain.User;
+import PDS.Project3.Domain.Entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.Collection;
 

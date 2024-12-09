@@ -1,6 +1,6 @@
 package PDS.Project3.Domain.RowMapper;
 import PDS.Project3.Domain.DTO.UserDTO;
-import PDS.Project3.Domain.User;
+import PDS.Project3.Domain.Entities.User;
 import org.springframework.beans.BeanUtils;
 
 import java.sql.ResultSet;

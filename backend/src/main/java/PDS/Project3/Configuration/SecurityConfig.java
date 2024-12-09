@@ -39,18 +39,23 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers("/item").hasAnyAuthority(ROLE_ADMIN.name(), ROLE_CLIENT.name())
-                        .requestMatchers("/order").hasAnyAuthority(ROLE_ADMIN.name(), ROLE_STAFF.name())
-                        .requestMatchers("/donate").hasAuthority(ROLE_STAFF.name())
-                        .anyRequest().authenticated()
-                )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .permitAll()
-                )
-                .logout(LogoutConfigurer::permitAll);
+                .authorizeHttpRequests((requests) -> {
+                    // Hardcoded, deduplicated authorities
+                    requests.requestMatchers(PUBLIC_URLS).permitAll()
+                            .requestMatchers("/item/piece/**").hasAnyAuthority(
+                                    "READ:ITEM", "UPDATE:ITEM", "DELETE:ITEM", "CREATE:ITEM"
+                            )
+                            .requestMatchers("/item").hasAnyAuthority(
+                                    "READ:ITEM"
+                            )
+                            .requestMatchers("/order/**").hasAnyAuthority(
+                                    "READ:ORDER"
+                            )
+                            .requestMatchers("/donate").hasAuthority(
+                                    "READ:ITEM"
+                            )
+                            .anyRequest().authenticated();
+                });
         return http.build();
     }
 

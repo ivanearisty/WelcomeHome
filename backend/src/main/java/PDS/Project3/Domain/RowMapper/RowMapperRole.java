@@ -1,6 +1,6 @@
 package PDS.Project3.Domain.RowMapper;
 
-import PDS.Project3.Domain.Role;
+import PDS.Project3.Domain.Entities.Role;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

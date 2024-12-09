@@ -1,11 +1,11 @@
 package PDS.Project3.Domain.RowMapper;
 
-import PDS.Project3.Domain.Item;
+import PDS.Project3.Domain.Entities.Item;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class RowMapperItem {
+public class RowMapperItem implements org.springframework.jdbc.core.RowMapper<Item>{
     public Item mapRow(ResultSet rs, int rowNum) throws SQLException {
         return Item.builder()
                 .id(rs.getInt("ItemID"))

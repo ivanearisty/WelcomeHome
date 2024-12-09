@@ -1,12 +1,18 @@
 package PDS.Project3.Configuration.Filters;
 
 import PDS.Project3.Configuration.TokenProvider;
+import PDS.Project3.Domain.Entities.HTTPResponse;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,10 +22,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+import static java.time.LocalTime.now;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.*;
 
 @Component
 @RequiredArgsConstructor
@@ -31,20 +39,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try{
+        try {
             String token = getToken(request);
             String userName = getUserName(request);
-            if(tokenProvider.isTokenValid(userName,token)){
+            if (tokenProvider.isTokenValid(userName, token)) {
                 List<GrantedAuthority> authorities = tokenProvider.getAuthorities(token);
-                Authentication auth = tokenProvider.getAuthentication(userName,authorities,request);
+                Authentication auth = tokenProvider.getAuthentication(userName, authorities, request);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            }else {
+            } else {
                 SecurityContextHolder.clearContext();
             }
-        }catch (Exception e){
-            log.error(e.getMessage());
+            filterChain.doFilter(request, response);
+        } catch (JWTVerificationException e) {
+            log.error("JWT Verification Error: {}", e.getMessage());
+            handleJwtException(response, e);
         }
     }
+
+    private void handleJwtException(HttpServletResponse response, JWTVerificationException e) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setContentType("application/json");
+        HTTPResponse errorResponse = HTTPResponse.builder()
+                .timeStamp(now().toString())
+                .reason("Invalid JWT token")
+                .developerMessage(e.getMessage())
+                .status(BAD_REQUEST)
+                .statusCode(HttpServletResponse.SC_BAD_REQUEST)
+                .build();
+        response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+    }
+
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {

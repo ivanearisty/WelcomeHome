@@ -67,11 +67,11 @@ CREATE TABLE Role (
 
 INSERT INTO Role(roleID, roleDescription, rolePermissions)
 VALUES
-    ('ROLE_ADMIN', 'Administrator, all permissions', 'READ:PERSON, UPDATE:PERSON, DELETE:PERSON, CREATE:PERSON, READ:ITEM, UPDATE:ITEM, DELETE:ITEM, CREATE:ITEM'),
+    ('ROLE_ADMIN', 'Administrator, all permissions', 'READ:PERSON, UPDATE:PERSON, DELETE:PERSON, CREATE:PERSON, READ:ITEM, UPDATE:ITEM, DELETE:ITEM, CREATE:ITEM, READ:ORDER' ),
     ('ROLE_CLIENT', 'read and order', 'READ:PERSON, READ:ITEM'),
     ('ROLE_DONOR', 'read and donate', 'READ:PERSON, READ:ITEM'),
-    ('ROLE_STAFF', 'read edit orders and inventory', 'READ:PERSON, READ:ITEM'),
-    ('ROLE_VOLUNTEER', 'act and stuff', 'READ:PERSON, READ:ITEM');
+    ('ROLE_STAFF', 'read edit orders and inventory', 'READ:PERSON, READ:ITEM, READ:ORDER'),
+    ('ROLE_VOLUNTEER', 'act and stuff', 'READ:PERSON, READ:ITEM, READ:ORDER');
 
 CREATE TABLE RolePerson (
                       roleID VARCHAR(20) NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE Delivered (
                            FOREIGN KEY (orderID) REFERENCES Ordered(orderID)
 );
 
--- Note, the following random data was partially generated with the use of AI:
+-- Note, the following random data was partially generated with the help of AI for the random values:
 
 -- Insert data into Category table
 INSERT INTO Category (mainCategory, subCategory, catNotes) VALUES
@@ -171,13 +171,29 @@ INSERT INTO DonatedBy (ItemID, userName, donateDate) VALUES
 
 -- Insert data into Ordered table
 INSERT INTO Ordered (orderDate, supervisor, client) VALUES
-        ('2023-08-09', 'admin', 'client1');
+        ('2023-08-09', 'admin', 'client1'),
+        ('2023-08-10', 'admin', 'client1');
 
 -- Insert data into Location table
 INSERT INTO Location (roomNum, shelfNum, shelf, shelfDescription) VALUES
-    (1, 5, 'Top Shelf', 'This is the top shelf in room 1');
+    (1, 1, 'Top Shelf', 'Shelf1'),
+    (1, 2, 'Mid Shelf', 'Shelf2'),
+    (1, 3, 'Bot Shelf', 'Shelf3'),
+    (1, 4, 'Side Shelf', 'Shelf4'),
+    (1, 5, 'Up Shelf', 'Shelf5');
 
 
 -- Insert data into Piece table
 INSERT INTO Piece (ItemID, pieceNum, pDescription, length, width, height, shelfNum, roomNum) VALUES
-        (1, 1, 'Chair seat', 40, 40, 5, 5,1);
+        (1, 1, 'Chair seat', 40, 40, 5, 5,1),
+        (1, 2, 'Chair Leg', 40, 10, 5, 4,1),
+        (1, 3, 'Chair Leg', 40, 10, 5, 3,1),
+        (1, 4, 'Chair Leg', 40, 10, 5, 2,1),
+        (1, 5, 'Chair Leg', 40, 10, 5, 1,1);
+
+-- Insert Items
+INSERT INTO ItemIn (ItemID, orderID, found)
+VALUES  (1, 1, FALSE),
+        (2, 2, FALSE);
+
+

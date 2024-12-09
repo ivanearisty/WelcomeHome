@@ -1,6 +1,8 @@
 package PDS.Project3.Domain;
 
 import PDS.Project3.Domain.DTO.UserDTO;
+import PDS.Project3.Domain.Entities.Role;
+import PDS.Project3.Domain.Entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

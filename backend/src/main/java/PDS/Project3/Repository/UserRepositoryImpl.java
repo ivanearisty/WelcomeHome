@@ -1,8 +1,8 @@
 package PDS.Project3.Repository;
 
-import PDS.Project3.Domain.Role;
+import PDS.Project3.Domain.Entities.Role;
 import PDS.Project3.Domain.RowMapper.RowMapperUser;
-import PDS.Project3.Domain.User;
+import PDS.Project3.Domain.Entities.User;
 import PDS.Project3.Domain.UserPrincipal;
 import PDS.Project3.Queries.Queries;
 import lombok.RequiredArgsConstructor;

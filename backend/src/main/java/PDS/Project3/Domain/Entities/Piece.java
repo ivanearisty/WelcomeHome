@@ -1,4 +1,4 @@
-package PDS.Project3.Domain;
+package PDS.Project3.Domain.Entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -13,12 +13,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(NON_DEFAULT)
-public class User {
-    private String userName;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private boolean enabled;
-    private boolean nonLocked;
+public class Piece {
+    private int itemId;
+    private int pieceNum;
+    private String description;
+    private int length;
+    private int width;
+    private int height;
+    private int roomNum;
+    private int shelfNum;
+    private String notes;
 }

@@ -2,12 +2,9 @@ package PDS.Project3.Controller;
 
 import PDS.Project3.Configuration.TokenProvider;
 import PDS.Project3.Domain.DTO.UserDTO;
-import PDS.Project3.Domain.HTTPResponse;
-import PDS.Project3.Domain.LoginForm;
-import PDS.Project3.Domain.User;
+import PDS.Project3.Domain.Entities.*;
 import PDS.Project3.Domain.UserPrincipal;
-import PDS.Project3.Service.RoleService;
-import PDS.Project3.Service.UserService;
+import PDS.Project3.Service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -20,10 +17,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static PDS.Project3.Domain.RowMapper.RowMapperUser.toUser;
 import static java.time.LocalDateTime.now;
@@ -36,12 +37,14 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 @Slf4j
 public class Controller {
-    //    private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final UserService userService;
     private final RoleService roleService;
+    private final ItemService itemService;
+    private final PieceService pieceService;
+    private final OrderService orderService;
     private final TokenProvider tokenProvider;
 
     @PostMapping("/user/register")
@@ -90,10 +93,45 @@ public class Controller {
         }
     }
 
-//    @GetMapping("/item/{id}")
-//    public ResponseEntity<HTTPResponse> retrieveitem(){
-//
-//    }
+    @PostMapping("/item")
+    public ResponseEntity<HTTPResponse> addItem(@RequestBody @Valid Item item) {
+        return null;
+    }
+
+    @GetMapping("/item/{id}")
+    public ResponseEntity<HTTPResponse> getItem(@RequestBody @Valid Item item){
+        return null;
+    }
+
+    @GetMapping("/item/piece/{id}")
+    public ResponseEntity<HTTPResponse> getItemPieces(@PathVariable("id") String id){
+        List<Piece> pieces = pieceService.getAllPiecesForItem(String.valueOf(id));
+        return ResponseEntity.ok(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("pieces", pieces))
+                        .message("Successfully retrieved pieces for item ID: " + id)
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build()
+        );
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<HTTPResponse> getOrder(@PathVariable("orderId") String id){
+        Map<Item, List<Piece>> orderElements = orderService.findOrderElements(Integer.parseInt(id));
+        List<ItemWithPieces> itemWithPiecesList = orderElements.entrySet().stream()
+                .map(entry -> new ItemWithPieces(entry.getKey(), entry.getValue()))
+                .toList();
+        return ResponseEntity.ok().body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("items", itemWithPiecesList))
+                        .message("Login was Successful")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
+    }
 
     @PostMapping("/test")
     public ResponseEntity<HTTPResponse> test() {

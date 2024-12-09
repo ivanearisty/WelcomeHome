@@ -1,6 +1,6 @@
 package PDS.Project3.Service;
 
-import PDS.Project3.Domain.Role;
+import PDS.Project3.Domain.Entities.Role;
 import PDS.Project3.Repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
