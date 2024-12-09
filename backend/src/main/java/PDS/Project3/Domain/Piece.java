@@ -13,14 +13,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(NON_DEFAULT)
-public class Item {
-    private int id;
+public class Piece {
+    private int itemId;
+    private int pieceNum;
     private String description;
-    private byte[] photo;
-    private String color;
-    private boolean isNew;
-    private boolean hasPieces;
-    private String material;
-    private String mainCategory;
-    private String subCategory;
+    private int length;
+    private int width;
+    private int height;
+    private int roomNum;
+    private int shelfNum;
+    private String notes;
 }

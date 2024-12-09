@@ -20,25 +20,22 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.net.http.HttpResponse;
 
 import static PDS.Project3.Domain.RowMapper.RowMapperUser.toUser;
 import static java.time.LocalDateTime.now;
 import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.security.authentication.UsernamePasswordAuthenticationToken.unauthenticated;
 
 @RestController
 @RequestMapping(path = "/")
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
+public class Controller {
     //    private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final HttpServletRequest request;
@@ -53,7 +50,7 @@ public class UserController {
         return ResponseEntity.created(getURI()).body(
                 HTTPResponse.builder()
                         .timeStamp(now().toString())
-                        .message("Created user: " + user.toString())
+                        .message("Created user: " + userDTO.toString())
                         .status(CREATED)
                         .statusCode(CREATED.value())
                         .build()
@@ -93,10 +90,10 @@ public class UserController {
         }
     }
 
-    @GetMapping("/item/{id}")
-    public ResponseEntity<HTTPResponse> retrieveitem(){
-
-    }
+//    @GetMapping("/item/{id}")
+//    public ResponseEntity<HTTPResponse> retrieveitem(){
+//
+//    }
 
     @PostMapping("/test")
     public ResponseEntity<HTTPResponse> test() {

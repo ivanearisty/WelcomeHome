@@ -33,7 +33,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RestControllerAdvice
 @Slf4j
-public class GlobalControllerAdvice extends ResponseEntityExceptionHandler implements ErrorController {
+public class ControllerAdvice extends ResponseEntityExceptionHandler implements ErrorController {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception e, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
