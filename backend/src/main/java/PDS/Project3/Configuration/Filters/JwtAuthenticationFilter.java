@@ -26,7 +26,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String TOKEN_PREFIX = "Bearer ";
-    private static final String[] PUBLIC_ROUTES = {""};
+    private static final String[] PUBLIC_ROUTES = {"user/login"};
     private final TokenProvider tokenProvider;
 
     @Override

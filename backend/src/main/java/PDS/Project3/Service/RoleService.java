@@ -8,5 +8,6 @@ import java.util.Collection;
 
 public interface RoleService {
     Role getRoleByUsername(String username);
+    Role getRoleByRoleID(String username);
     Collection<Role> getRoles();
 }

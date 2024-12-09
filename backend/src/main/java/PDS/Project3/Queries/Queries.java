@@ -12,5 +12,11 @@ public class Queries {
 
     //ROLE-PERSON QUERIES
     public static final String INSERT_ROLE_TO_USER = "INSERT INTO RolePerson(roleID, userName) VALUES (:roleID, :userName)";
-
+    public static final String SELECT_ROLE_FROM_USERNAME = """
+            SELECT r.roleID, r.roleDescription, r.rolePermissions
+            FROM Role as r
+            INNER JOIN RolePerson as rp ON r.roleID = rp.roleID
+            INNER JOIN Person as p ON rp.userName = p.userName
+            WHERE p.userName = :userName;
+            """;
 }

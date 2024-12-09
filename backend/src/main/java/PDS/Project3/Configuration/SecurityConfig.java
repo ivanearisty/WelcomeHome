@@ -31,7 +31,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String[] PUBLIC_URLS = {"/user/login/**", "/inserttest/**", "/test**"};
+    private static final String[] PUBLIC_URLS = {"/user/login/**", "/user/register/**", "/inserttest/**", "/test**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
