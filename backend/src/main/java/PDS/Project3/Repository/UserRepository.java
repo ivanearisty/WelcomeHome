@@ -18,4 +18,5 @@ public interface UserRepository <T extends User> extends UserDetailsService {
     Boolean delete(String id);
     /* Basic Crud Operations */
 
+    T createWithRole(T data, String RoleID);
 }

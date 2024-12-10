@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -50,25 +51,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.clearContext();
             }
             filterChain.doFilter(request, response);
-        } catch (JWTVerificationException e) {
-            log.error("JWT Verification Error: {}", e.getMessage());
-            handleJwtException(response, e);
+        } catch (EmptyResultDataAccessException ex) {
+            log.error("Database record not found: {}", ex.getMessage());
+            handleCustomException(response, NOT_FOUND, "Record not found", ex.getMessage());
+        } catch (JWTVerificationException ex) {
+            log.error("JWT verification error: {}", ex.getMessage());
+            handleCustomException(response, BAD_REQUEST, "Invalid JWT token", ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Unexpected error in filter: {}", ex.getMessage());
+            handleCustomException(response, INTERNAL_SERVER_ERROR, "An unexpected error occurred", ex.getMessage());
         }
     }
 
-    private void handleJwtException(HttpServletResponse response, JWTVerificationException e) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    private void handleCustomException(HttpServletResponse response, HttpStatus status, String reason, String developerMessage) throws IOException {
+        response.setStatus(status.value());
         response.setContentType("application/json");
         HTTPResponse errorResponse = HTTPResponse.builder()
                 .timeStamp(now().toString())
-                .reason("Invalid JWT token")
-                .developerMessage(e.getMessage())
-                .status(BAD_REQUEST)
-                .statusCode(HttpServletResponse.SC_BAD_REQUEST)
+                .reason(reason)
+                .developerMessage(developerMessage)
+                .status(status)
+                .statusCode(status.value())
                 .build();
         response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
     }
-
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {

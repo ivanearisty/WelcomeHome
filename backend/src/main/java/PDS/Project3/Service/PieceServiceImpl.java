@@ -19,12 +19,17 @@ public class PieceServiceImpl implements PieceService {
     }
 
     @Override
-    public Piece addPieceToItem(Piece piece, String itemId) {
-        return pieceRepository.set(piece, itemId);
+    public Piece addPiece(Piece piece) {
+        return pieceRepository.set(piece);
     }
 
     @Override
     public Boolean deletePiece(Piece piece) {
         return pieceRepository.delete(piece);
+    }
+
+    @Override
+    public Boolean validateLocation(int roomNum, int shelfNum) {
+        return pieceRepository.getLocation(roomNum, shelfNum) != null;
     }
 }

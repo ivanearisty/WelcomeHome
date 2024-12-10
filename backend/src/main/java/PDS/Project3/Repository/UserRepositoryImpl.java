@@ -34,7 +34,6 @@ public class UserRepositoryImpl implements UserRepository<User> {
 
     @Override
     public User create(User user) {
-        //TODO: Check if email is unique
         try{
             if(user.getUserName().isEmpty()){
                 user.setUserName(user.getEmail().substring(0,user.getEmail().indexOf('@')));
@@ -46,7 +45,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
             user.setNonLocked(true);
             SqlParameterSource parameterSource = getSQLParameterSource(user);
             jdbc.update(INSERT_USER,parameterSource);
-            roleRepository.addRoleToUser(ROLE_ADMIN.name(), user.getUserName()); //TODO: MAKE THIS CLIENT FOR LATER
+            roleRepository.addRoleToUser(ROLE_ADMIN.name(), user.getUserName());
             log.info("User created: {}", user);
             log.info("With parameters: {}", parameterSource.toString());
             return user;
@@ -54,7 +53,31 @@ public class UserRepositoryImpl implements UserRepository<User> {
             log.info("User creation failed: {}", user);
         }catch (Exception exception){
             log.info("Unknown error when creating a new user: {}", user);
-            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public User createWithRole(User user, String RoleID) {
+        try{
+            if(user.getUserName().isEmpty()){
+                user.setUserName(user.getEmail().substring(0,user.getEmail().indexOf('@')));
+            }
+            if(this.countUsernames(user) > 0){
+                throw new RuntimeException("Username already exists");
+            }
+            user.setEnabled(true);
+            user.setNonLocked(true);
+            SqlParameterSource parameterSource = getSQLParameterSource(user);
+            jdbc.update(INSERT_USER,parameterSource);
+            roleRepository.addRoleToUser(RoleID, user.getUserName());
+            log.info("User created: {}", user);
+            log.info("With parameters: {}", parameterSource.toString());
+            return user;
+        }catch (EmptyResultDataAccessException exception){
+            log.info("User creation failed: {}", user);
+        }catch (Exception exception){
+            log.info("Unknown error when creating a new user: {}", user);
         }
         return null;
     }
@@ -95,6 +118,7 @@ public class UserRepositoryImpl implements UserRepository<User> {
     public Boolean delete(String id) {
         return null;
     }
+
 
 //    public Boolean acceptDonation(Item id);
 

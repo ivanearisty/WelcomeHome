@@ -1,6 +1,8 @@
 package PDS.Project3.Controller;
 
 import PDS.Project3.Configuration.TokenProvider;
+import PDS.Project3.Domain.DTO.DonationRequest;
+import PDS.Project3.Domain.DTO.PieceRequest;
 import PDS.Project3.Domain.DTO.UserDTO;
 import PDS.Project3.Domain.Entities.*;
 import PDS.Project3.Domain.UserPrincipal;
@@ -9,23 +11,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static PDS.Project3.Domain.Enum.Roles.*;
 import static PDS.Project3.Domain.RowMapper.RowMapperUser.toUser;
 import static java.time.LocalDateTime.now;
 import static java.util.Map.of;
@@ -54,6 +57,58 @@ public class Controller {
                 HTTPResponse.builder()
                         .timeStamp(now().toString())
                         .message("Created user: " + userDTO.toString())
+                        .status(CREATED)
+                        .statusCode(CREATED.value())
+                        .build()
+        );
+    }
+
+    @PostMapping("/register/staff")
+    public ResponseEntity<HTTPResponse> staffRegister(@RequestBody @Valid User user) {
+        UserDTO userDTO = userService.createUserWithRole(user, ROLE_STAFF.name());
+        return ResponseEntity.created(getURI()).body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .message("Created user: " + userDTO.toString() + " with role " + ROLE_STAFF.name())
+                        .status(CREATED)
+                        .statusCode(CREATED.value())
+                        .build()
+        );
+    }
+
+    @PostMapping("/register/volunteer")
+    public ResponseEntity<HTTPResponse> volunteerRegister(@RequestBody @Valid User user) {
+        UserDTO userDTO = userService.createUserWithRole(user, ROLE_VOLUNTEER.name());
+        return ResponseEntity.created(getURI()).body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .message("Created user: " + userDTO.toString() + " with role " + ROLE_VOLUNTEER.name())
+                        .status(CREATED)
+                        .statusCode(CREATED.value())
+                        .build()
+        );
+    }
+
+    @PostMapping("/register/donor")
+    public ResponseEntity<HTTPResponse> donorRegister(@RequestBody @Valid User user) {
+        UserDTO userDTO = userService.createUserWithRole(user, ROLE_DONOR.name());
+        return ResponseEntity.created(getURI()).body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .message("Created user: " + userDTO.toString() + " with role " + ROLE_DONOR.name())
+                        .status(CREATED)
+                        .statusCode(CREATED.value())
+                        .build()
+        );
+    }
+
+    @PostMapping("/register/client")
+    public ResponseEntity<HTTPResponse> clientRegister(@RequestBody @Valid User user) {
+        UserDTO userDTO = userService.createUserWithRole(user, ROLE_CLIENT.name());
+        return ResponseEntity.created(getURI()).body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .message("Created user: " + userDTO.toString() + " with role " + ROLE_CLIENT.name())
                         .status(CREATED)
                         .statusCode(CREATED.value())
                         .build()
@@ -99,11 +154,6 @@ public class Controller {
     }
 
     @GetMapping("/item/{id}")
-    public ResponseEntity<HTTPResponse> getItem(@RequestBody @Valid Item item){
-        return null;
-    }
-
-    @GetMapping("/item/piece/{id}")
     public ResponseEntity<HTTPResponse> getItemPieces(@PathVariable("id") String id){
         List<Piece> pieces = pieceService.getAllPiecesForItem(String.valueOf(id));
         return ResponseEntity.ok(
@@ -127,10 +177,61 @@ public class Controller {
                 HTTPResponse.builder()
                         .timeStamp(now().toString())
                         .data(Map.of("items", itemWithPiecesList))
-                        .message("Login was Successful")
+                        .message("Successfully retrieved order elements for order: " + id)
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
                         .build());
+    }
+
+    @PostMapping("/donation")
+    public ResponseEntity<HTTPResponse> acceptDonation(@RequestBody @NonNull DonationRequest donationRequest) {
+        System.out.println(donationRequest.toString());
+        Role role = roleService.getRoleByUsername(donationRequest.getDonorUsername());
+        Item savedItem;
+        if(!ROLE_DONOR.name().equals(role.getRoleID())){
+            return ResponseEntity.badRequest().body(
+                    HTTPResponse.builder()
+                            .timeStamp(now().toString())
+                            .status(BAD_REQUEST)
+                            .statusCode(BAD_REQUEST.value())
+                            .reason("Selected User is Not Donor")
+                            .developerMessage("Role of user was " + role.getRoleID() + " and expected ROLE_DONOR")
+                            .build());
+        }else {
+            Item item = new Item();
+            BeanUtils.copyProperties(donationRequest.getItem(), item);
+            savedItem = itemService.createItem(item);
+            List<PieceRequest> pieces = donationRequest.getPieces();
+            int pieceNum = 1;
+            if (!pieces.isEmpty()) {
+                for (PieceRequest pieceRequest : pieces) {
+                    if (!pieceService.validateLocation(pieceRequest.getRoomNum(), pieceRequest.getShelfNum())) {
+                        return ResponseEntity.badRequest().body(
+                                HTTPResponse.builder()
+                                        .timeStamp(now().toString())
+                                        .status(BAD_REQUEST)
+                                        .statusCode(BAD_REQUEST.value())
+                                        .reason("Invalid location")
+                                        .developerMessage("Invalid room or shelf number provided for piece")
+                                        .build());
+                    }
+                    log.info("Adding Piece" + pieceRequest.toString());
+                    Piece piece = new Piece();
+                    BeanUtils.copyProperties(pieceRequest, piece);
+                    piece.setItemId(savedItem.getId());
+                    piece.setPieceNum(pieceNum++);
+                    pieceService.addPiece(piece);
+                }
+            }
+        }
+        return ResponseEntity.created(getURI()).body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .message("Created Item: " + savedItem.toString())
+                        .status(CREATED)
+                        .statusCode(CREATED.value())
+                        .build()
+        );
     }
 
     @PostMapping("/test")
@@ -154,6 +255,7 @@ public class Controller {
                         .firstName("Ivan")
                         .lastName("Aristy")
                         .build();
+        log.info(roleService.getRoleByRoleID("ROLE_ADMIN").toString());
         userService.createUser(testUser);
         return ResponseEntity.created(getURI()).body(
                 HTTPResponse.builder()
@@ -171,7 +273,6 @@ public class Controller {
 
     private URI getURI() {
         return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()); //TODO: create get method
-//        return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/get/<userName>").toUriString()); //TODO: create get method
     }
 
 }

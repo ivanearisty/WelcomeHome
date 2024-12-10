@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -168,6 +169,19 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler implements 
                         .status(INTERNAL_SERVER_ERROR)
                         .statusCode(INTERNAL_SERVER_ERROR.value())
                         .build(), INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<HTTPResponse> dataIntegrityViolationException(DataIntegrityViolationException exception) {
+        log.error(exception.getMessage());
+        return new ResponseEntity<>(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .reason("Your Input is Not Valid due to an Integrity Constraint")
+                        .developerMessage(exception.getMessage())
+                        .status(BAD_REQUEST)
+                        .statusCode(BAD_REQUEST.value())
+                        .build(), BAD_REQUEST);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)

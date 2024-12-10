@@ -26,9 +26,12 @@ public class Queries {
     VALUES (:iDescription, :photo, :color, :isNew, :hasPieces, :material, :mainCategory, :subCategory);
     """;
     public static final String SELECT_ITEM_BY_ID = "SELECT * FROM Item WHERE itemID = :itemID";
+    public static final String SELECT_LOCATION = "SELECT * FROM Location WHERE roomNum = :roomNum AND shelfNum = :shelfNum";
 
     //PIECE QUERIES
     public static final String SELECT_PIECES_BY_ITEM_ID = "SELECT * FROM Piece WHERE ItemID = :itemID;";
+    public static final String INSERT_PIECE =
+            "INSERT INTO Piece(ItemID, pieceNum, pDescription, length, width, height, roomNum, shelfNum, pNotes) VALUES (:ItemID, :pieceNum, :pDescription, :length, :width, :height, :roomNum, :shelfNum, :pNotes)";
 
     //ORDER QUERY
     public static final String SELECT_ORDER_BY_ORDER_ID = """

@@ -31,7 +31,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String[] PUBLIC_URLS = {"/user/login/**", "/user/register/**", "/inserttest/**", "/test**"};
+    private static final String[] PUBLIC_URLS = {"/user/login/**", "/user/register/**", "/inserttest/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,20 +40,16 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> {
-                    // Hardcoded, deduplicated authorities
                     requests.requestMatchers(PUBLIC_URLS).permitAll()
-                            .requestMatchers("/item/piece/**").hasAnyAuthority(
-                                    "READ:ITEM", "UPDATE:ITEM", "DELETE:ITEM", "CREATE:ITEM"
-                            )
-                            .requestMatchers("/item").hasAnyAuthority(
-                                    "READ:ITEM"
-                            )
-                            .requestMatchers("/order/**").hasAnyAuthority(
-                                    "READ:ORDER"
-                            )
-                            .requestMatchers("/donate").hasAuthority(
-                                    "READ:ITEM"
-                            )
+                            //Core requests
+                            .requestMatchers("/test").hasAuthority("CREATE:ITEM")
+                            .requestMatchers("/donation").hasAuthority("CREATE:ITEM")
+//                            .requestMatchers("register/**").hasAuthority("CREATE:PERSON") TODO: Secure user registration in production.
+                            .requestMatchers("/item/piece/**").hasAnyAuthority("READ:ITEM", "UPDATE:ITEM", "DELETE:ITEM", "CREATE:ITEM")
+                            .requestMatchers("/item").hasAnyAuthority("READ:ITEM")
+                            .requestMatchers("/order/**").hasAnyAuthority("READ:ORDER")
+                            .requestMatchers("/donate").hasAuthority("READ:ITEM")
+                            //Block unauthenticated requests
                             .anyRequest().authenticated();
                 });
         return http.build();

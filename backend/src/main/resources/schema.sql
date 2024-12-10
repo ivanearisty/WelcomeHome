@@ -70,7 +70,7 @@ VALUES
     ('ROLE_ADMIN', 'Administrator, all permissions', 'READ:PERSON, UPDATE:PERSON, DELETE:PERSON, CREATE:PERSON, READ:ITEM, UPDATE:ITEM, DELETE:ITEM, CREATE:ITEM, READ:ORDER' ),
     ('ROLE_CLIENT', 'read and order', 'READ:PERSON, READ:ITEM'),
     ('ROLE_DONOR', 'read and donate', 'READ:PERSON, READ:ITEM'),
-    ('ROLE_STAFF', 'read edit orders and inventory', 'READ:PERSON, READ:ITEM, READ:ORDER'),
+    ('ROLE_STAFF', 'read edit orders and inventory', 'READ:PERSON, READ:ITEM, READ:ORDER, CREATE:ITEM'),
     ('ROLE_VOLUNTEER', 'act and stuff', 'READ:PERSON, READ:ITEM, READ:ORDER');
 
 CREATE TABLE RolePerson (
@@ -149,9 +149,11 @@ CREATE TABLE Delivered (
 
 -- Insert data into Category table
 INSERT INTO Category (mainCategory, subCategory, catNotes) VALUES
+        ('Furniture', 'Tables', 'Eating furniture'),
         ('Furniture', 'Chairs', 'Seating furniture'),
         ('Electronics', 'Phones', 'Mobile and landline phones'),
-        ('Books', 'Fiction', 'Novels and stories');
+        ('Books', 'Fiction', 'Novels and stories'),
+        ('Default', 'Default', 'Eating furniture');
 
 -- Insert data into Item table
 INSERT INTO Item (iDescription, color, isNew, hasPieces, material, mainCategory, subCategory) VALUES
@@ -163,7 +165,8 @@ INSERT INTO Item (iDescription, color, isNew, hasPieces, material, mainCategory,
 INSERT INTO Person (userName, password, fname, lname, email) VALUES
         ('admin', 'admin123', 'John', 'Doe', 'admin@example.com'),
         ('client1', 'client123', 'Jane', 'Smith', 'jane@example.com'),
-        ('donor1', 'donor123', 'Jim', 'Beam', 'jim@example.com');
+        ('donor1', 'donor123', 'Jim', 'Beam', 'jim@example.com'),
+        ('staff1', 'staff123', 'Sam', 'Adams', 'sam@example.com');
 
 -- Insert data into DonatedBy table
 INSERT INTO DonatedBy (ItemID, userName, donateDate) VALUES
@@ -173,6 +176,11 @@ INSERT INTO DonatedBy (ItemID, userName, donateDate) VALUES
 INSERT INTO Ordered (orderDate, supervisor, client) VALUES
         ('2023-08-09', 'admin', 'client1'),
         ('2023-08-10', 'admin', 'client1');
+
+INSERT INTO RolePerson (roleID, userName) VALUES
+        ('ROLE_DONOR', 'donor1'),
+        ('ROLE_CLIENT', 'client1'),
+        ('ROLE_STAFF', 'staff1');
 
 -- Insert data into Location table
 INSERT INTO Location (roomNum, shelfNum, shelf, shelfDescription) VALUES

@@ -31,7 +31,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class TokenProvider {
     public static final String AUTHORITIES = "authorities";
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1_800_000;
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 3_600_000;
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 432_000_000;
     private static final String ISSUER = "Ivan Aristy";
     @Value("${jwt.secret}")

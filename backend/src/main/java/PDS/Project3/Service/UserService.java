@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface UserService {
     public UserDTO createUser(User user);
+    public UserDTO createUserWithRole(User user, String roleID);
 
     public UserDTO getUser(String userName);
 

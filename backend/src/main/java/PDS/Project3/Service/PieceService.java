@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface PieceService {
     List<Piece> getAllPiecesForItem(String itemId);
-    Piece addPieceToItem(Piece piece, String itemId);
+    Piece addPiece(Piece piece);
     Boolean deletePiece(Piece piece);
+    Boolean validateLocation(int roomNum, int shelfNum);
 }

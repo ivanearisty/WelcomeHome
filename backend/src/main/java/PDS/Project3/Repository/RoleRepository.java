@@ -4,7 +4,7 @@ import PDS.Project3.Domain.Entities.Role;
 
 import java.util.Collection;
 
-public interface RoleRepository<T extends Role> {
+public interface    RoleRepository<T extends Role> {
 
     T create(T role);
     Collection<T> list(int page, int pageSize);

@@ -5,7 +5,7 @@ import PDS.Project3.Domain.Entities.Role;
 import java.util.Collection;
 
 public interface RoleService {
-    Role getRoleByUsername(String username);
-    Role getRoleByRoleID(String username);
-    Collection<Role> getRoles();
+    public Role getRoleByUsername(String username);
+    public Role getRoleByRoleID(String roleID);
+    public Collection<Role> getRoles();
 }

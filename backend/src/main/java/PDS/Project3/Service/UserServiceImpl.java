@@ -31,6 +31,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO createUserWithRole(User user, String roleID) {
+        return fromUser(userRepository.createWithRole(user,roleID));
+    }
+
+    @Override
     public UserDTO getUser(String userName) {
         return fromUser(userRepository.getUserByUsername(userName));
     }
