@@ -1,10 +1,7 @@
 package PDS.Project3.Controller;
 
 import PDS.Project3.Configuration.TokenProvider;
-import PDS.Project3.Domain.DTO.DonationRequest;
-import PDS.Project3.Domain.DTO.OrderCreationRequest;
-import PDS.Project3.Domain.DTO.PieceRequest;
-import PDS.Project3.Domain.DTO.UserDTO;
+import PDS.Project3.Domain.DTO.*;
 import PDS.Project3.Domain.Entities.*;
 import PDS.Project3.Domain.UserPrincipal;
 import PDS.Project3.Service.*;
@@ -50,6 +47,7 @@ public class Controller {
     private final ItemService itemService;
     private final PieceService pieceService;
     private final OrderService orderService;
+    private final CategoryService categoryService;
     private final TokenProvider tokenProvider;
 
     @PostMapping("/user/register")
@@ -248,6 +246,48 @@ public class Controller {
                         .statusCode(CREATED.value())
                         .build()
         );
+    }
+
+    @PostMapping("/order/addItem")
+    public ResponseEntity<HTTPResponse> addItem(@RequestBody @NonNull ItemInRequest itemInRequest) {
+        itemService.orderItem(itemInRequest.getItemID(),itemInRequest.getOrderID());
+        return ResponseEntity.ok().body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .status(OK)
+                        .statusCode(OK.value())
+                        .message("Successfully Added Item to Order")
+                        .build());
+    }
+
+    @GetMapping("/category/select")
+    public ResponseEntity<HTTPResponse> selectCategory(@RequestBody @NonNull CategoryItemsRequest categoryItemsRequest) {
+        List<Item> items = categoryService.getItems(
+                Category.builder()
+                        .mainCategory(categoryItemsRequest.getMainCategory())
+                        .subCategory(categoryItemsRequest.getSubCategory())
+                        .build());
+        return ResponseEntity.ok().body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .status(OK)
+                        .statusCode(OK.value())
+                        .message("Available Items")
+                        .data(Map.of("items", items))
+                        .build());
+    }
+
+    @GetMapping("/category/all")
+    public ResponseEntity<HTTPResponse> getAllCategories() {
+        List<Category> categories = categoryService.findAll();
+        return ResponseEntity.ok().body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .message("Retrieved all categories.")
+                        .status(OK)
+                        .statusCode(OK.value())
+                        .data(Map.of("categories", categories))
+                        .build());
     }
 
     @PostMapping("/test")

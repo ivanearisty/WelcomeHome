@@ -32,4 +32,9 @@ public class ItemServiceImpl implements ItemService {
     public void deleteItemById(String itemId) {
 
     }
+
+    @Override
+    public boolean orderItem(int itemID, int orderID) {
+        return itemRepository.order(itemID, orderID);
+    }
 }

@@ -33,6 +33,17 @@ public class Queries {
     public static final String INSERT_PIECE =
             "INSERT INTO Piece(ItemID, pieceNum, pDescription, length, width, height, roomNum, shelfNum, pNotes) VALUES (:ItemID, :pieceNum, :pDescription, :length, :width, :height, :roomNum, :shelfNum, :pNotes)";
 
+    //CATEGORY QUERY
+    public static final String SELECT_ALL_CATEGORIES = "SELECT * FROM Category";
+    public static final String SELECT_ITEMS_BY_CATEGORY = """
+            SELECT *
+            FROM Item i
+            LEFT JOIN ItemIn ii ON i.ItemID = ii.ItemID
+            WHERE i.mainCategory = :mainCategory
+            AND i.subCategory = :subCategory
+            AND ii.orderID IS NULL;
+            """;
+
     //ORDER QUERY
     public static final String SELECT_ORDER_BY_ORDER_ID = """
             SELECT
@@ -60,4 +71,9 @@ public class Queries {
             """;
 
     public static final String INSERT_ORDER = "INSERT INTO Ordered(orderDate, orderNotes, supervisor, client) VALUES (:date, :notes, :supervisor, :client)";
+    public static final String ORDER_ITEM = """
+            INSERT INTO ItemIn (ItemID, orderID, found)
+            VALUES (:itemID, :orderID, FALSE);
+            """;
+
 }

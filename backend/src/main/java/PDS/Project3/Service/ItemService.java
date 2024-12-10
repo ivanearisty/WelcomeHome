@@ -9,4 +9,5 @@ public interface ItemService {
     List<Item> getAllItems();
     Item createItem(Item item);
     void deleteItemById(String itemId);
+    boolean orderItem(int itemID, int orderID);
 }

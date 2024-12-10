@@ -67,10 +67,10 @@ CREATE TABLE Role (
 
 INSERT INTO Role(roleID, roleDescription, rolePermissions)
 VALUES
-    ('ROLE_ADMIN', 'Administrator, all permissions', 'READ:PERSON, UPDATE:PERSON, DELETE:PERSON, CREATE:PERSON, READ:ITEM, UPDATE:ITEM, DELETE:ITEM, CREATE:ITEM, READ:ORDER, CREATE:ORDER' ),
+    ('ROLE_ADMIN', 'Administrator, all permissions', 'READ:PERSON, UPDATE:PERSON, DELETE:PERSON, CREATE:PERSON, READ:ITEM, UPDATE:ITEM, DELETE:ITEM, CREATE:ITEM, READ:ORDER, CREATE:ORDER, UPDATE:ORDER' ),
     ('ROLE_CLIENT', 'read and order', 'READ:ORDER, READ:ITEM'),
     ('ROLE_DONOR', 'read and donate', 'READ:ORDER, READ:ITEM'),
-    ('ROLE_STAFF', 'read edit orders and inventory', 'READ:PERSON, READ:ITEM, READ:ORDER, CREATE:ITEM, CREATE:ORDER'),
+    ('ROLE_STAFF', 'read edit orders and inventory', 'READ:PERSON, READ:ITEM, READ:ORDER, CREATE:ITEM, CREATE:ORDER, UPDATE:ORDER'),
     ('ROLE_VOLUNTEER', 'act and stuff', 'READ:PERSON, READ:ITEM, READ:ORDER');
 
 CREATE TABLE RolePerson (
@@ -153,7 +153,7 @@ INSERT INTO Category (mainCategory, subCategory, catNotes) VALUES
         ('Furniture', 'Chairs', 'Seating furniture'),
         ('Electronics', 'Phones', 'Mobile and landline phones'),
         ('Books', 'Fiction', 'Novels and stories'),
-        ('Default', 'Default', 'Eating furniture');
+        ('Default', 'Default', 'Default Category');
 
 -- Insert data into Item table
 INSERT INTO Item (iDescription, color, isNew, hasPieces, material, mainCategory, subCategory) VALUES

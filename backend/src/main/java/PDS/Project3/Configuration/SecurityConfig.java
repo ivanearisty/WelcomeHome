@@ -50,6 +50,8 @@ public class SecurityConfig {
                             .requestMatchers("/order/get/**").hasAnyAuthority("READ:ORDER")
                             .requestMatchers("/order/create").hasAnyAuthority("CREATE:ORDER")
                             .requestMatchers("/donate").hasAuthority("READ:ITEM")
+                            .requestMatchers("/category/**").hasAuthority("READ:ITEM")
+                            .requestMatchers("/order/addItem").hasAuthority("UPDATE:ORDER")
                             //Block unauthenticated requests
                             .anyRequest().authenticated();
                 });

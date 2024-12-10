@@ -1,7 +1,6 @@
 package PDS.Project3.Repository;
 
 import PDS.Project3.Domain.Entities.Item;
-import PDS.Project3.Domain.Entities.Location;
 import PDS.Project3.Domain.RowMapper.RowMapperItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +12,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
-import java.util.Map;
 
 import static PDS.Project3.Queries.Queries.*;
 import static java.util.Map.*;
@@ -71,6 +68,13 @@ public class ItemRepositoryImpl implements ItemRepository<Item> {
     @Override
     public Boolean delete(String itemId) {
         return null;
+    }
+
+    @Override
+    public Boolean order(int itemID, int orderID) {
+        jdbc.update(ORDER_ITEM, of("itemID", itemID, "orderID", orderID));
+        log.info("Added item {} to order {}", itemID, orderID);
+        return true;
     }
 
     private SqlParameterSource getSQLParameterSource(Item item) {
