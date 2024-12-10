@@ -15,7 +15,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
-public class UserPrincipal implements UserDetails {
+public class    UserPrincipal implements UserDetails {
     private final User user;
     private final Role role;
 

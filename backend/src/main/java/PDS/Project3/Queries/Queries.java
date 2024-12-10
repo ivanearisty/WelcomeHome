@@ -58,4 +58,6 @@ public class Queries {
             WHERE ii.orderID = :orderID
             ORDER BY i.ItemID, p.pieceNum
             """;
+
+    public static final String INSERT_ORDER = "INSERT INTO Ordered(orderDate, orderNotes, supervisor, client) VALUES (:date, :notes, :supervisor, :client)";
 }

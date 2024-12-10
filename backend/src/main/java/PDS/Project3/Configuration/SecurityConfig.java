@@ -44,10 +44,11 @@ public class SecurityConfig {
                             //Core requests
                             .requestMatchers("/test").hasAuthority("CREATE:ITEM")
                             .requestMatchers("/donation").hasAuthority("CREATE:ITEM")
-//                            .requestMatchers("register/**").hasAuthority("CREATE:PERSON") TODO: Secure user registration in production.
+                            .requestMatchers("/register/**").hasAuthority("CREATE:PERSON")
                             .requestMatchers("/item/piece/**").hasAnyAuthority("READ:ITEM", "UPDATE:ITEM", "DELETE:ITEM", "CREATE:ITEM")
                             .requestMatchers("/item").hasAnyAuthority("READ:ITEM")
-                            .requestMatchers("/order/**").hasAnyAuthority("READ:ORDER")
+                            .requestMatchers("/order/get/**").hasAnyAuthority("READ:ORDER")
+                            .requestMatchers("/order/create").hasAnyAuthority("CREATE:ORDER")
                             .requestMatchers("/donate").hasAuthority("READ:ITEM")
                             //Block unauthenticated requests
                             .anyRequest().authenticated();

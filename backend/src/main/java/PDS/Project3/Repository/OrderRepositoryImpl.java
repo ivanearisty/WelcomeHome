@@ -5,7 +5,11 @@ import PDS.Project3.Domain.Entities.Order;
 import PDS.Project3.Domain.Entities.Piece;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -13,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static PDS.Project3.Queries.Queries.INSERT_ORDER;
 import static PDS.Project3.Queries.Queries.SELECT_ORDER_BY_ORDER_ID;
 
 @Repository
@@ -64,5 +69,23 @@ public class OrderRepositoryImpl implements OrderRepository<Order> {
         );
         log.info("Order elements found: " + orderElements);
         return orderElements;
+    }
+
+    @Override
+    public Order create(Order order) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource parameterSource = getSqlParameterSource(order);
+        jdbc.update(INSERT_ORDER, parameterSource, keyHolder);
+        order.setOrderID(keyHolder.getKey().intValue());
+        return order;
+    }
+
+    public SqlParameterSource getSqlParameterSource(Order order) {
+        return new MapSqlParameterSource()
+                .addValue("date", order.getOrderDate())
+                .addValue("notes", order.getOrderNotes())
+                .addValue("supervisor", order.getSupervisor())
+                .addValue("client", order.getClient())
+                ;
     }
 }

@@ -10,4 +10,5 @@ import java.util.Map;
 public interface OrderRepository<T extends Order> {
     public T findById(long id);
     public Map<Item, List<Piece>> findOrderElements(int id);
+    public T create(T order);
 }

@@ -2,6 +2,7 @@ package PDS.Project3.Controller;
 
 import PDS.Project3.Configuration.TokenProvider;
 import PDS.Project3.Domain.DTO.DonationRequest;
+import PDS.Project3.Domain.DTO.OrderCreationRequest;
 import PDS.Project3.Domain.DTO.PieceRequest;
 import PDS.Project3.Domain.DTO.UserDTO;
 import PDS.Project3.Domain.Entities.*;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -117,7 +119,7 @@ public class Controller {
 
     @PostMapping("/user/login")
     public ResponseEntity<HTTPResponse> login(@RequestBody @Valid LoginForm loginForm) {
-        log.info("Login form: " + loginForm.toString());
+        log.info("Login form: {}", loginForm.toString());
         Authentication authentication = authenticate(loginForm.getUserName(), loginForm.getPassword());
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         String accessToken = tokenProvider.createAccessToken(userPrincipal);
@@ -136,23 +138,6 @@ public class Controller {
                         .build());
     }
 
-    private Authentication authenticate(@NotEmpty(message = "Username cannot be empty") String userName, @NotEmpty(message = "Password cannot be empty") String password) {
-        try {
-            log.info("Authenticating user: " + userName);
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName,password));
-            log.info("Authenticated user: " + userName);
-            return authentication;
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new BadCredentialsException("Invalid username or password");
-        }
-    }
-
-    @PostMapping("/item")
-    public ResponseEntity<HTTPResponse> addItem(@RequestBody @Valid Item item) {
-        return null;
-    }
-
     @GetMapping("/item/{id}")
     public ResponseEntity<HTTPResponse> getItemPieces(@PathVariable("id") String id){
         List<Piece> pieces = pieceService.getAllPiecesForItem(String.valueOf(id));
@@ -167,7 +152,7 @@ public class Controller {
         );
     }
 
-    @GetMapping("/order/{orderId}")
+    @GetMapping("/order/get/{orderId}")
     public ResponseEntity<HTTPResponse> getOrder(@PathVariable("orderId") String id){
         Map<Item, List<Piece>> orderElements = orderService.findOrderElements(Integer.parseInt(id));
         List<ItemWithPieces> itemWithPiecesList = orderElements.entrySet().stream()
@@ -185,7 +170,7 @@ public class Controller {
 
     @PostMapping("/donation")
     public ResponseEntity<HTTPResponse> acceptDonation(@RequestBody @NonNull DonationRequest donationRequest) {
-        System.out.println(donationRequest.toString());
+        System.out.println(donationRequest);
         Role role = roleService.getRoleByUsername(donationRequest.getDonorUsername());
         Item savedItem;
         if(!ROLE_DONOR.name().equals(role.getRoleID())){
@@ -215,7 +200,7 @@ public class Controller {
                                         .developerMessage("Invalid room or shelf number provided for piece")
                                         .build());
                     }
-                    log.info("Adding Piece" + pieceRequest.toString());
+                    log.info("Adding Piece{}", pieceRequest);
                     Piece piece = new Piece();
                     BeanUtils.copyProperties(pieceRequest, piece);
                     piece.setItemId(savedItem.getId());
@@ -228,6 +213,37 @@ public class Controller {
                 HTTPResponse.builder()
                         .timeStamp(now().toString())
                         .message("Created Item: " + savedItem.toString())
+                        .status(CREATED)
+                        .statusCode(CREATED.value())
+                        .build()
+        );
+    }
+
+    @PostMapping("/order/create")
+    public ResponseEntity<HTTPResponse> createOrder(@RequestBody @NonNull OrderCreationRequest orderCreationRequest) {
+        UserDTO loggedInUser = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String supervisorID = loggedInUser.getUserName();
+        Role role = roleService.getRoleByUsername(orderCreationRequest.getClient());
+        if(!ROLE_CLIENT.name().equals(role.getRoleID())) {
+            return ResponseEntity.badRequest().body(
+                    HTTPResponse.builder()
+                            .timeStamp(now().toString())
+                            .status(BAD_REQUEST)
+                            .statusCode(BAD_REQUEST.value())
+                            .reason("Selected User for Order is Not Client")
+                            .developerMessage("Role of user was " + role.getRoleID() + " and expected ROLE_CLIENT")
+                            .build());
+        }
+        Order createdOrder = orderService.createOrder(Order.builder()
+                .orderDate(orderCreationRequest.getOrderDate())
+                .orderNotes(orderCreationRequest.getOrderNotes())
+                .client(orderCreationRequest.getClient())
+                .supervisor(supervisorID)
+                .build());
+        return ResponseEntity.created(getURI()).body(
+                HTTPResponse.builder()
+                        .timeStamp(now().toString())
+                        .message("Created Item: " + createdOrder.toString())
                         .status(CREATED)
                         .statusCode(CREATED.value())
                         .build()
@@ -267,12 +283,23 @@ public class Controller {
         );
     }
 
+    private Authentication authenticate(@NotEmpty(message = "Username cannot be empty") String userName, @NotEmpty(message = "Password cannot be empty") String password) {
+        try {
+            log.info("Authenticating user: {}", userName);
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName,password));
+            log.info("Authenticated user: {}", userName);
+            return authentication;
+        }catch (Exception e){
+            throw new BadCredentialsException("Invalid username or password");
+        }
+    }
+
     private UserPrincipal getUserPrincipal(UserDTO userDTO) {
         return new UserPrincipal(toUser(userService.getUser(userDTO.getUserName())), roleService.getRoleByUsername(userDTO.getUserName()));
     }
 
     private URI getURI() {
-        return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()); //TODO: create get method
+        return URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString());
     }
 
 }
