@@ -105,13 +105,3 @@ WelcomeHome is a web application implemented in Java using the Spring Boot frame
 | `/order/addItem`       | POST   | UPDATE:ORDER        | Add an item to an order.                      |
 
 For a full list of endpoints and their details, refer to the `Controller.java` file.
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-Developed by Ivan Aristy and team.
