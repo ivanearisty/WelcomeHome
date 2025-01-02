@@ -1,4 +1,4 @@
-# # WelcomeHome
+# WelcomeHome
 
 WelcomeHome is a web application implemented in Java using the Spring Boot framework. It serves as a backend system for managing users, items, orders, and donations with role-based access control. The application interacts directly with the database using JDBC and prepared statements, ensuring security and efficiency.
 
